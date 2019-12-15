@@ -3,7 +3,7 @@ provider "petstore" {
 }
 
 resource "petstore_pet" "my_pet" {
-    name = "mittens"
+    name = "snowball"
     species = "cat"
-    age = 3
+    age = 7
 }

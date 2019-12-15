@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/mutexkv"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 
@@ -40,5 +39,3 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	}
 	return sdk.NewClient(cfg)
 }
-
-var petStoreMutexKV = mutexkv.NewMutexKV()

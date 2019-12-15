@@ -24,3 +24,4 @@ src/
 .vscode
 .vscode/
 terraform-provider-petstore
+dist/*

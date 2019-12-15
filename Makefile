@@ -9,7 +9,7 @@ GO_FILES      := $(shell find . -type f -name '*.go')
 
 
 .PHONY: all
-all: test build
+all: clean test build
 
 .PHONY: test
 test: test-all
