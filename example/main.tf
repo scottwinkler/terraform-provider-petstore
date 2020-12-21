@@ -1,9 +1,18 @@
+terraform {
+     required_providers {
+      petstore = {
+      source  = "DTherHtun/petstore"
+      version = "~> 1.0"
+    }
+     }
+}
+
 provider "petstore" {
-    address = "https://g6pny6dke9.execute-api.us-west-2.amazonaws.com/petstore"
+    address = "https://xfc42dh782.execute-api.us-west-2.amazonaws.com/v1"
 }
 
 resource "petstore_pet" "my_pet" {
-    name = "snowball"
+    name = "princess"
     species = "cat"
-    age = 7
+    age = 3
 }

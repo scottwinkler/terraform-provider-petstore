@@ -1,8 +1,10 @@
 package petstore
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	sdk "github.com/scottwinkler/go-petstore"
+	"fmt"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	sdk "github.com/terraform-in-action/go-petstore"
 )
 
 func resourcePSPet() *schema.Resource {
@@ -11,19 +13,31 @@ func resourcePSPet() *schema.Resource {
 		Read:   resourcePSPetRead,
 		Update: resourcePSPetUpdate,
 		Delete: resourcePSPetDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Default:  "",
 			},
 			"species": {
 				Type:     schema.TypeString,
+				ForceNew: true,
 				Required: true,
 			},
 			"age": {
 				Type:     schema.TypeInt,
 				Required: true,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					v := val.(int)
+					if v < 0 {
+						errs = append(errs, fmt.Errorf("%q must be greater than 0, got: %d", key, v))
+					}
+					return
+				},
 			},
 		},
 	}
@@ -43,8 +57,7 @@ func resourcePSPetCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(pet.ID)
-	resourcePSPetRead(d, meta)
-	return nil
+	return resourcePSPetRead(d, meta)
 }
 
 func resourcePSPetRead(d *schema.ResourceData, meta interface{}) error {
@@ -65,9 +78,6 @@ func resourcePSPetUpdate(d *schema.ResourceData, meta interface{}) error {
 	if d.HasChange("name") {
 		options.Name = d.Get("name").(string)
 	}
-	if d.HasChange("species") {
-		options.Species = d.Get("species").(string)
-	}
 	if d.HasChange("age") {
 		options.Age = d.Get("age").(int)
 	}
@@ -77,6 +87,9 @@ func resourcePSPetUpdate(d *schema.ResourceData, meta interface{}) error {
 
 func resourcePSPetDelete(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*sdk.Client)
-	conn.Pets.Delete(d.Id())
+	err := conn.Pets.Delete(d.Id())
+	if err != nil {
+		return err
+	}
 	return nil
 }
